@@ -1,18 +1,19 @@
+import 'package:cricket_app/movie_details.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'movie.dart';
-import 'movie_details.dart';
 
 void main() {
-  runApp(const MyApp());//entry
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key : key);//container for everything
+  const MyApp({Key? key}) : super(key: key);
 
-  //This widget is the root of application
+  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {//A handle to the location of a widget in the widget tree
+  Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => MovieModel(),
       child: MaterialApp(
@@ -27,46 +28,35 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key : key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
+
   final String title;
 
   @override
-  State<MyHomePage>createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage>
-{/*
-  final List<String> names = [
-    "fred",
-    "george",
-    "gilderoy lockhart"
-  ];*/
-
-  final List<Color> colors = [
-    Colors.amber,
-    Colors.blueAccent,
-    Colors.purpleAccent,
+{
+  final List<Color>colors = [
+    const Color.fromRGBO(208, 5, 240, 100),//purple
+    const Color.fromRGBO(60, 5, 240, 100),//blue
+    const Color.fromRGBO(5, 170, 240, 100),//light blue
+    const Color.fromRGBO(5, 240, 158, 100),//teal
+    const Color.fromRGBO(29, 240, 5, 100),//green
+    const Color.fromRGBO(177, 240, 5, 100),//lime
+    const Color.fromRGBO(240, 189, 5, 100),//dandelion
+    const Color.fromRGBO(240, 52, 5, 100),//blood orange
+    const Color.fromRGBO(240, 5, 5, 100),//red af
   ];
-
-
-  //The annotation @override marks an instance member as overriding a superclass member with the same name.
-  //The intent of the @override notation is to catch situations where a superclass renames a member, and an independent subclass which used to override the member, could silently continue working using the superclass implementation.
   @override
   Widget build(BuildContext context) {
     return Consumer<MovieModel>(
-      builder: (context, movieModel, _)
-        {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text("Edit Movie"),
-            ),
-
-          );
-        }
+        builder:buildScaffold
     );
   }
 
-  Scaffold buildScaffold(BuildContext context, MovieModel movieModel, _) {
+  Scaffold buildScaffold(BuildContext context, MovieModel movieModel, _) {//context, movie model to consume, blank/omit parameter
     return Scaffold(
     appBar: AppBar(
       title: Text(widget.title),
@@ -74,29 +64,35 @@ class _MyHomePageState extends State<MyHomePage>
     ),
     body: Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-        //ui here
-        Expanded(//what does expanded mean???
-            child: ListView.builder(//instead of hard coding children we can use a function to define what each item looks like , provide item count to say how many items in the list; dynamic
-                itemBuilder: (_, index) {//build context and int // "context" || "_"
-                  var movie = movieModel.items[index];
-                  var colorpos = index%colors.length;
-                  var color = colors[colorpos];
-                  final image = movie.image;//why make this final?
-                  return ListTile(
-                    title:Text(movie.title),
-                    subtitle: Text("${movie.year} - ${movie.duration} Hours"),
-                    leading: image != null ? Image.network(image): null,
-                    tileColor: color,
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {return MovieDetails(id:index); }));
-                    },
-                  );
-                },
-                itemCount:movieModel.items.length
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+
+          //YOUR UI HERE
+          Expanded(
+            child: Expanded(
+              child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    //returns WIDGET
+                    //BUILDER allows us to assign children using a function rather than hard-coding
+                    //CONTEXT : act on behalf of calling/parent widget
+                    var movie = movieModel.items[index];
+                    var color = colors[index%colors.length];
+                    final image = movie.image;
+                    return ListTile(
+                      title:Text(movie.title),
+                      subtitle: Text("${movie.year} - ${movie.duration} Hours"),
+                      tileColor: color,
+                      leading: image != null ? Image.network(image) : null,
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) { return MovieDetails(id:index); }));
+                      },
+                    );
+                  },
+                  itemCount:movieModel.items.length
+              ),
             )
-        )
-      ],
+          )
+        ],
       ),
     ),
   );
